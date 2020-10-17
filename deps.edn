@@ -1,7 +1,9 @@
 {:paths ["src"]
  :aliases
  {:test
-  {:extra-paths ["test"]}
+  {:extra-paths ["test"]
+   :extra-deps
+   {cljs-bean {:mvn/version "1.6.0"}}}
 
   :dev
   {:extra-deps
