@@ -35,7 +35,8 @@
 
 (defn- apply-parser-args-opts
   "Apply parser component options map.
-   Accepts :tag, :props, and :children parsing keys."
+   Accepts :tag, :props, and :children parsing keys.
+   The parser value can either be a transform fn (fn [x] x) or hardcoded value."
   [nargs {:keys [tag props children]
           :or {tag identity
                props identity
@@ -54,8 +55,8 @@
         ;; We use custom inline fn as key so as to not override any user defined parsers.
          {#(identity %) {:children (fn [ch]
                                      (if (vector? ch) (mapv #(compile % opts) ch) ch))}}))
-
-(defn default-emitter
+(defn- default-emitter
+  "Default :emitter option for hiccup compilation."
   [tag props & children]
   #?(:cljs (apply reajure.element/render tag props children)
      :clj  `(reajure.element/render ~tag ~props ~@children)))
@@ -63,10 +64,10 @@
 (defn compile
   "Compile any hiccup in component `body` using custom `opts`.
    Options: 
-      - `emitter`      - fn or macro that accepts [tag props children] arguments.
-      - `parsers`      - {clause parser} map as specified in [[component/parse-args]].
-      - `precompiled?` - predicate fn, if component tag/props are already compiled, only hiccup children are compiled.
-      - `callable?`    - preedicatte fn, component args are not precompiled but output itself can be self-called."
+      - :emitter      - fn or macro that accepts [tag props children] arguments.
+      - :parsers      - {clause parser} map as specified in [[component/parse-args]].
+      - :precompiled? - predicate fn, whether component tag and props need compilation.
+      - :callable?    - predicate fn, whether component can be self-called after compilation."
   ([body] (compile body {}))
   ([body {:keys [emitter parsers precompiled? callable?]
           :or {emitter      default-emitter
@@ -92,7 +93,7 @@
                  (and (not (vector? args)) (sequential? args)))
              `(~t ~p ~@ch)
 
-             ;; => Emit args 
+             ;; => Emittable args 
              (vector? args)
              (if (fn? emitter)
                (apply emitter t p ch)
