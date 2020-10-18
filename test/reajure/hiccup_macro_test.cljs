@@ -1,10 +1,10 @@
 (ns reajure.hiccup-macro-test
   (:require
    [cljs.test :refer [deftest testing is]]
-   [reajure.impl.hiccup-testing :as ht :refer [h]]))
+   [reajure.testing :as t :refer [h]]))
 
 (deftest hiccup-macro-test
   (testing ""
-    (ht/is-el=
+    (t/is-el=
      (h ["div"])
      ["div" #js {}])))

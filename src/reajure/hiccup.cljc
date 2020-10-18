@@ -1,7 +1,7 @@
 (ns reajure.hiccup
   (:refer-clojure :exclude [compile])
   (:require
-   #?(:cljs [reajure.element])
+   [reajure.core]
    [reajure.impl.sexp :as sexp]
    [reajure.impl.parser :as parser])
   #?(:cljs (:require-macros [reajure.hiccup])))
@@ -58,8 +58,8 @@
 (defn- default-emitter
   "Default :emitter option for hiccup compilation."
   [tag props & children]
-  #?(:cljs (apply reajure.element/render tag props children)
-     :clj  `(reajure.element/render ~tag ~props ~@children)))
+  #?(:cljs (apply reajure.core/render tag props children)
+     :clj  `(reajure.core/render ~tag ~props ~@children)))
 
 (defn compile
   "Compile any hiccup in component `body` using custom `opts`.

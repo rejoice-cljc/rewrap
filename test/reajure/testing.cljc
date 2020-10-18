@@ -1,11 +1,11 @@
-(ns reajure.impl.hiccup-testing
+(ns reajure.testing
   "Hiccup macro example setup. 
    Note: due to the way cljs macros work, these macro must be declared in their own file."
   (:require
    #?@(:cljs [[cljs.test :refer [is]]]
        :clj [[clojure.test :refer [is]]])
    #?(:clj [reajure.hiccup :as hiccup]))
-  #?(:cljs (:require-macros [reajure.impl.hiccup-testing])))
+  #?(:cljs (:require-macros [reajure.testing])))
 
 #?(:cljs
    (defn
