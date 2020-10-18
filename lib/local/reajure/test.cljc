@@ -1,11 +1,21 @@
-(ns reajure.testing
-  "Hiccup macro example setup. 
-   Note: due to the way cljs macros work, these macro must be declared in their own file."
+(ns reajure.test
+  "Test helpers."
   (:require
-   #?@(:cljs [[cljs.test :refer [is]]]
-       :clj [[clojure.test :refer [is]]])
-   #?(:clj [reajure.hiccup :as hiccup]))
-  #?(:cljs (:require-macros [reajure.testing])))
+   #?@(:cljs [[cljs.test :refer [is]]
+              [goog.object :as obj]]
+       :clj [[clojure.test :refer [is]]]))
+  #?(:cljs (:require-macros [reajure.test])))
+
+;; object testing helpers 
+
+(defn obj-eq
+  "Checks whether two objects are equal to each other. 
+   In clj, compares the s-expressions."
+  [x1 x2]
+  #?(:cljs (obj/equals x1 x2)
+     :clj (= x1 x2)))
+
+;; = element testing helpers 
 
 #?(:cljs
    (defn
@@ -28,8 +38,3 @@
       :clj ;; match element fn call
       ([el sexp]
        (is (= el sexp)))))
-
-#?(:clj
-   (defmacro h
-     ([body] `(h ~body {}))
-     ([body opts] (hiccup/compile body opts))))

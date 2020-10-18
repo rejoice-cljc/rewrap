@@ -1,11 +1,14 @@
-{:paths ["src"]
+{:paths ["lib/src"]
  :aliases
- {:test
-  {:extra-paths ["test"]
+ {:local
+  {:extra-paths ["lib/local"
+                 "demo/src"]
    :extra-deps
-   {cljs-bean {:mvn/version "1.6.0"}}}
-
-  :dev
-  {:extra-deps
    {binaryage/devtools        {:mvn/version "0.9.10"}
-    thheller/shadow-cljs      {:mvn/version "2.11.0"}}}}}
+    thheller/shadow-cljs      {:mvn/version "2.11.0"}}}
+
+  :test
+  {:extra-paths ["lib/test"
+                 "demo/test"]
+   :extra-deps
+   {lambdaisland/kaocha     {:mvn/version "0.0-554"}}}}}

@@ -2,10 +2,10 @@
   (:require
    #?@(:cljs [[cljs.test :refer [deftest testing is]]]
        :clj [[clojure.test :refer [deftest testing is]]])
-   [reajure.testing :as t]
+   [reajure.test :as t]
    [reajure.hiccup :as hiccup]))
 
-(deftest hiccup-default-compile-test
+(deftest hiccup-compile-default-test
   (testing "accepts nil props"
     (t/is-el=
      (hiccup/compile ["div" nil])
@@ -34,7 +34,7 @@
           :clj [(is (= el `(reajure.core/render "div" nil (reajure.core/render "p" nil "foo"))))]))))
 
 
-(deftest hiccup-parser-compile-test
+(deftest hiccup-compile-parser-test
   (testing "can parse an argument's hardcode value"
     (t/is-el=  (hiccup/compile [:div "foo"] {:parsers {keyword? {:tag "div"}}})
                 #?(:cljs ["div" #js {:children "foo"}]
