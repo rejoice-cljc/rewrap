@@ -1,0 +1,5 @@
+#kaocha/v1
+ #merge [{:tests [{:id           :unit
+                   :source-paths ["lib/src" "lib/local"]
+                   :test-paths   ["lib/test"]}]
+          :fail-fast? true}]
