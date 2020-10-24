@@ -1,4 +1,5 @@
 (ns reajure.hiccup
+  "Utilities for compiling Hiccup arguments into React components."
   (:refer-clojure :exclude [compile])
   (:require
    [reajure.core]
@@ -26,35 +27,27 @@
   (or (map? x) (js-literal? x) (nil? x)))
 
 (defn- normalize-args
-  "Converts `args` to [tag props children] vector."
+  "Converts component `args` to [tag props children] vector."
   [args]
   (let [tag      (first args)
         props    (if (maybe-props? (second args)) (second args) nil)
         children (into [] (drop (if (or props (nil? (second args))) 2 1) args))]
     [tag props children]))
 
-(defn- apply-parser-args-opts
-  "Apply parser component options map.
-   Accepts :tag, :props, and :children parsing keys.
-   The parser value can either be a transform fn (fn [x] x) or hardcoded value."
-  [nargs {:keys [tag props children]
-          :or {tag identity
-               props identity
-               children identity}}]
+(defn- apply-parser-args-map
+  "Apply parser map to normalized component args `nargs`.
+   Accepts :tag, :props, and :children keys.
+   A parser value can either be a transform fn (fn [x] x) or hardcoded value."
+  [args {:keys [tag props children]
+         :or {tag identity
+              props identity
+              children identity}}]
   (letfn [(fn-or-val [f-or-v x] (if (fn? f-or-v) (f-or-v x) f-or-v))]
-    (let [[t p ch] nargs
-          t (fn-or-val tag t)
-          p (when p (if-not (js-literal? p) (fn-or-val props p) p))
-          ch (fn-or-val children ch)]
-      [t p ch])))
+    (let [[x-tag x-props x-children] args]
+      [(fn-or-val tag x-tag)
+       (if-not (js-literal? x-props) (when x-props (fn-or-val props x-props)) x-props)
+       (fn-or-val children x-children)])))
 
-(defn- create-parsers
-  "Merge custom `parsers` with default one for compiling hiccup children."
-  [parsers opts]
-  (merge parsers
-        ;; We use custom inline fn as key so as to not override any user defined parsers.
-         {#(identity %) {:children (fn [ch]
-                                     (if (vector? ch) (mapv #(compile % opts) ch) ch))}}))
 (defn- default-emitter
   "Default :emitter option for hiccup compilation."
   [tag props & children]
@@ -81,11 +74,16 @@
      (let [[initial-tag props children] (normalize-args body)]
        (if (precompiled? initial-tag)
          `(~initial-tag ~props ~@(mapv #(compile % opts) children))
-         (let [args (parser/parse body {:parsers         (create-parsers parsers opts)
-                                        :normalize-args  normalize-args
-                                        :apply-args-opts apply-parser-args-opts
-                                        :terminate-early? #(not (maybe-hiccup? %))})
-               [t p ch] args]
+         (let [parsers  (parser/create-parsers
+                         parsers
+                         {:children (fn [ch] (if (vector? ch) (mapv #(compile % opts) ch) ch))})
+               args     (parser/parse
+                         body
+                         {:parsers          parsers
+                          :normalize        normalize-args
+                          :apply-opts-map   apply-parser-args-map
+                          :terminate-early? #(not (maybe-hiccup? %))})
+               [t p ch]  args]
            (cond
               ;; => Callable tag
              (or (callable? initial-tag)
