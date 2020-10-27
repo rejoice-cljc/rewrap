@@ -1,11 +1,9 @@
-(ns reajure.component
+(ns reajure.compile.component
   "Utilities for compiling React component definitions."
-  (:refer-clojure :exclude [parse])
   (:require
    #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
-   [reajure.impl.parser :as parser])
-  #?(:cljs (:require-macros [reajure.component])))
+   [reajure.impl.parser :as parser]))
 
 (s/def ::defnc-forms
   (s/cat
@@ -26,7 +24,7 @@
       (let [{:keys [name docstr args body]} parsed]
         [name docstr args body]))))
 
-(defn- apply-parser-forms-map
+(defn- apply-forms-map-parser
   "Apply parser map to normalized forms `nforms`.
    Accepts :name, :docstr, :args, :body parsing keys.
    A parser value can either be a transform fn (fn [x] x) or hardcoded value."
@@ -55,11 +53,7 @@
    Returns :name, :docstr, and :component map."
   ([forms] (compile-def forms {}))
   ([forms parser]
-   (let [[name docstr args body] (parser/parse
-                                  forms
-                                  {:parsers        (parser/create-parsers parser)
-                                   :normalize normalize-forms
-                                   :apply-opts-map apply-parser-forms-map})]
+   (let [[name docstr args body] (parser/apply-parser (normalize-forms forms) parser apply-forms-map-parser)]
      {:name name
       :docstr docstr
       :component (component-fn* name args body)})))

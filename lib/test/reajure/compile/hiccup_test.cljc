@@ -1,9 +1,9 @@
-(ns reajure.hiccup-test
+(ns reajure.compile.hiccup-test
   (:require
    #?@(:cljs [[cljs.test :refer [deftest testing is]]]
        :clj [[clojure.test :refer [deftest testing is]]])
    [reajure.test :as t]
-   [reajure.hiccup :as hiccup]))
+   [reajure.compile.hiccup :as hiccup]))
 
 (deftest hiccup-compile-default-test
   (testing "accepts nil props"

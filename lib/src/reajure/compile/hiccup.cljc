@@ -1,11 +1,10 @@
-(ns reajure.hiccup
+(ns reajure.compile.hiccup
   "Utilities for compiling Hiccup arguments into React components."
   (:refer-clojure :exclude [compile])
   (:require
    [reajure.core]
    [reajure.impl.sexp :as sexp]
-   [reajure.impl.parser :as parser])
-  #?(:cljs (:require-macros [reajure.hiccup])))
+   [reajure.impl.parser :as parser]))
 
 (declare compile)
 
@@ -81,7 +80,7 @@
                          body
                          {:parsers          parsers
                           :normalize        normalize-args
-                          :apply-opts-map   apply-parser-args-map
+                          :apply-parser-map   apply-parser-args-map
                           :terminate-early? #(not (maybe-hiccup? %))})
                [t p ch]  args]
            (cond

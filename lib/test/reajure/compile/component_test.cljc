@@ -1,8 +1,8 @@
-(ns reajure.component-test
+(ns reajure.compile.component-test
   (:require
    #?@(:cljs [[cljs.test :refer [deftest testing is]]]
        :clj [[clojure.test :refer [deftest testing is]]])
-   [reajure.component :as comp]))
+   [reajure.compile.component :as comp]))
 
 (deftest comp-compile-test
   (testing "compiles basic forms"
