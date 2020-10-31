@@ -4,7 +4,7 @@
 .nrepl-port
 .cpcache
 .shadow-cljs
-.clj-kondo/.cache
+*/.clj-kondo/.cache
 .calva
 
 # js
