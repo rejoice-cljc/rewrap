@@ -47,12 +47,6 @@
        (if-not (js-literal? x-props) (when x-props (fn-or-val props x-props)) x-props)
        (fn-or-val children x-children)])))
 
-(defn- default-emitter
-  "Default :emitter option for hiccup compilation."
-  [tag props & children]
-  #?(:cljs (apply reajure.core/render tag props children)
-     :clj  `(reajure.core/render ~tag ~props ~@children)))
-
 (defn compile
   "Compile any hiccup in component `body` using custom `opts`.
    Options: 
@@ -62,7 +56,7 @@
       - :callable?    - predicate fn, whether component can be self-called after compilation."
   ([body] (compile body {}))
   ([body {:keys [emitter parsers precompiled? callable?]
-          :or {emitter      default-emitter
+          :or {emitter     reajure.core/render
                parsers      {}
                precompiled? (fn [_] false)
                callable?    (fn [_] false)}

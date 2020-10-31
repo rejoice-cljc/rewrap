@@ -1,5 +1,6 @@
 (ns reajure.compile.component
   "Utilities for compiling React component definitions."
+  (:refer-clojure :exclude [compile])
   (:require
    #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
@@ -9,7 +10,7 @@
   (s/cat
    :name    symbol?
    :docstr  (s/? string?)
-   :params    (s/coll-of any? :kind vector?)
+   :params  (s/coll-of any? :kind vector?)
    :body    (s/* any?)))
 
 (defn normalize-forms
@@ -37,24 +38,35 @@
        (fn-or-val params x-params)
        (fn-or-val body x-body)])))
 
-(defn component-fn*
-  "Generate component fn with given `name`, `params`, and `body`."
-  [name params body]
-  `(fn ~name
-     ~@(case (count params)
-         `([] ~@body)
-         `([props#] (let [~params [props#]] ~@body))
-         `([props# ?ref#] (let [~params [props# ?ref#]] ~@body)))))
+(defn fc-dname* 
+  "Give a display `name` to a fn component expr."
+  [fc-expr name]
+  `(let [fc# ~fc-expr]
+     (set! (.-displayName fc#) ~(str name))
+     fc#))
 
-(defn compile-def
-  "Compile component `forms` def using custom `parser`.
+(defn fc-expr*
+  "Generate fn component expr with given `name`, `params`, and `body`."
+  [name params body]
+  (let [n (count params)]
+    `(fn ~name
+       ~@(if (= n 0)
+           `([] ~@body)
+           (let [bindings (if (= n 1)
+                            '[props#]
+                            '[props# ref#])]
+             `(~bindings (let [~params ~bindings] ~@body)))))))
+
+(defn compile
+  "Compile component def `forms` using custom `parser`.
    Returns map with parsed :name, :docstr, :params, :body options, along their composed component form."
-  ([forms] (compile-def forms {}))
+  ([forms] (compile forms {}))
   ([forms parser]
    (let [[name docstr params body] (parser/apply-parser (normalize-forms forms) parser apply-forms-map-parser)]
-     {:name name
+     {:name   name
       :docstr docstr
       :params params
-      :body body
-      :component (component-fn* name params body)})))
+      :body   body
+      :component (-> (fc-expr* name params body)
+                     (fc-dname* name))})))
 

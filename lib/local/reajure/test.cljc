@@ -34,7 +34,7 @@
       ([el [type props]]
        (let [[el-type el-props] (el->type+props el)]
          (is (= el-type type))
-         (is (= (js->clj el-props) (js->clj  props)))))
+         (is (= (js->clj el-props :keywordize-keys true) (js->clj  props :keywordize-keys true)))))
       :clj ;; match element fn call
       ([el sexp]
        (is (= el sexp)))))
