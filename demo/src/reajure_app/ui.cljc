@@ -1,7 +1,7 @@
 (ns reajure-app.ui
   (:require
    #?@(:clj [[reajure.core :as rj]
-             [reajure.hiccup :as hiccup]]))
+             [reajure.compile.hiccup :as hiccup]]))
   #?(:cljs (:require-macros [reajure-app.ui])))
 
 #?(:clj

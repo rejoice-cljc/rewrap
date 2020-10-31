@@ -9,11 +9,8 @@
   (s/cat
    :name    symbol?
    :docstr  (s/? string?)
-   :args    (s/coll-of any? :kind vector?)
+   :params    (s/coll-of any? :kind vector?)
    :body    (s/* any?)))
-
-(comment 
-  (s/conform ::defnc-forms ['msg ['props] "text"]))
 
 (defn normalize-forms
   "Normalize component defn forms."
@@ -21,40 +18,43 @@
   (let [parsed (s/conform ::defnc-forms forms)]
     (if (= parsed :clojure.spec.alpha/invalid)
       (throw (ex-info "Invalid component definition." (s/explain-data ::defnc-forms parsed)))
-      (let [{:keys [name docstr args body]} parsed]
-        [name docstr args body]))))
+      (let [{:keys [name docstr params body]} parsed]
+        [name docstr params body]))))
 
 (defn- apply-forms-map-parser
   "Apply parser map to normalized forms `nforms`.
-   Accepts :name, :docstr, :args, :body parsing keys.
+   Accepts :name, :docstr, :params, :body parsing keys.
    A parser value can either be a transform fn (fn [x] x) or hardcoded value."
-  [nforms {:keys [name docstr args body]
+  [nforms {:keys [name docstr params body]
            :or {name   identity
                 docstr identity
-                args   identity
+                params   identity
                 body   identity}}]
   (letfn [(fn-or-val [f-or-v x] (if (fn? f-or-v) (f-or-v x) f-or-v))]
-    (let [[x-name x-docstr x-args x-body] nforms]
+    (let [[x-name x-docstr x-params x-body] nforms]
       [(fn-or-val name x-name)
        (fn-or-val docstr x-docstr)
-       (fn-or-val args x-args)
+       (fn-or-val params x-params)
        (fn-or-val body x-body)])))
 
 (defn component-fn*
-  "Generate component fn with given `name`, `args`, and `body`."
-  [name args body]
+  "Generate component fn with given `name`, `params`, and `body`."
+  [name params body]
   `(fn ~name
-     ([] ~@body)
-     ([props#] (~name props# nil))
-     ([props# ?ref#] (let [~args [props# ?ref#]] ~@body))))
+     ~@(case (count params)
+         `([] ~@body)
+         `([props#] (let [~params [props#]] ~@body))
+         `([props# ?ref#] (let [~params [props# ?ref#]] ~@body)))))
 
 (defn compile-def
   "Compile component `forms` def using custom `parser`.
-   Returns :name, :docstr, and :component map."
+   Returns map with parsed :name, :docstr, :params, :body options, along their composed component form."
   ([forms] (compile-def forms {}))
   ([forms parser]
-   (let [[name docstr args body] (parser/apply-parser (normalize-forms forms) parser apply-forms-map-parser)]
+   (let [[name docstr params body] (parser/apply-parser (normalize-forms forms) parser apply-forms-map-parser)]
      {:name name
       :docstr docstr
-      :component (component-fn* name args body)})))
+      :params params
+      :body body
+      :component (component-fn* name params body)})))
 

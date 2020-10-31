@@ -1,6 +1,10 @@
 (ns reajure.core
-  (:require [reajure.impl.js-interop :as j]
-            #?(:cljs ["react" :as react])))
+  (:require
+   #?(:cljs ["react" :as react])
+   [reajure.impl.js-interop :as j]))
+
+#?(:cljs 
+   (def createElement react/createElement))
 
 (defn ->props
   "Convert cljs map to js props object
@@ -17,5 +21,5 @@
   "Render react element."
   ([type] (render type nil))
   ([type props & children]
-   #?(:cljs (apply react/createElement type props children)
-      :clj `(react/createElement ~type ~props ~@children))))
+   #?(:cljs (apply createElement type props children)
+      :clj `(createElement ~type ~props ~@children))))
