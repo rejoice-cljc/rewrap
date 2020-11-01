@@ -1,8 +1,10 @@
-# Reajure
+# Rewrap
 
 Standalone utilities for writing React in Clojurescript.
 
 ---
+
+### Development
 
 First, make sure dependencies are installed:
 

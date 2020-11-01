@@ -1,8 +1,8 @@
-(ns reajure-app-demo.ui-test
+(ns rewrap-app-demo.ui-test
   (:require
    [cljs.test :refer [deftest testing]]
-   [reajure.test :as t]
-   [reajure-app-demo.ui :as ui]))
+   [rewrap.test :as t]
+   [rewrap-app-demo.ui :as ui]))
 
 (ui/defc comp-basic
   []

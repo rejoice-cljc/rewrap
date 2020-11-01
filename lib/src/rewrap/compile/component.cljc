@@ -1,10 +1,10 @@
-(ns reajure.compile.component
+(ns rewrap.compile.component
   "Utilities for compiling React component definitions."
   (:refer-clojure :exclude [compile])
   (:require
    #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
-   [reajure.impl.parser :as parser]))
+   [rewrap.impl.parser :as parser]))
 
 (s/def ::defnc-forms
   (s/cat

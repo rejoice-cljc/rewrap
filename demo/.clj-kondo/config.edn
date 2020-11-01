@@ -1,2 +1,2 @@
 {:lint-as
- {reajure-app-demo.ui/defc clojure.core/defn}}
+ {rewrap-app-demo.ui/defc clojure.core/defn}}

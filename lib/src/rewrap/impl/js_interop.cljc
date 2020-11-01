@@ -1,4 +1,4 @@
-(ns reajure.impl.js-interop
+(ns rewrap.impl.js-interop
   (:refer-clojure :exclude [assoc])
   #?(:cljs (:require [goog.object :as obj])))
 

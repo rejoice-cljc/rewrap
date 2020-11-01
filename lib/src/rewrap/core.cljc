@@ -1,7 +1,7 @@
-(ns reajure.core
+(ns rewrap.core
   (:require
    #?(:cljs ["react" :as react])
-   [reajure.impl.js-interop :as j]))
+   [rewrap.impl.js-interop :as j]))
 
 #?(:cljs 
    (def createElement react/createElement))

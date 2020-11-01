@@ -1,9 +1,9 @@
-(ns reajure.compile.component-test
+(ns rewrap.compile.component-test
   (:require
    #?(:cljs [cljs.test :refer [deftest testing is]]
       :clj  [clojure.test :refer [deftest testing is]])
    [clojure.string :as str]
-   [reajure.compile.component :as comp]))
+   [rewrap.compile.component :as comp]))
 
 (deftest comp-compile-def-test
   (letfn [(testable [m] (dissoc m :component))]

@@ -1,10 +1,10 @@
-(ns reajure.compile.hiccup
+(ns rewrap.compile.hiccup
   "Utilities for compiling Hiccup arguments into React components."
   (:refer-clojure :exclude [compile])
   (:require
-   [reajure.core]
-   [reajure.impl.sexp :as sexp]
-   [reajure.impl.parser :as parser]))
+   [rewrap.core]
+   [rewrap.impl.sexp :as sexp]
+   [rewrap.impl.parser :as parser]))
 
 (declare compile)
 
@@ -56,7 +56,7 @@
       - :callable?    - predicate fn, whether component can be self-called after compilation."
   ([body] (compile body {}))
   ([body {:keys [emitter parsers precompiled? callable?]
-          :or {emitter     reajure.core/render
+          :or {emitter     rewrap.core/render
                parsers      {}
                precompiled? (fn [_] false)
                callable?    (fn [_] false)}

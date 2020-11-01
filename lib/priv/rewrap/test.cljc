@@ -1,10 +1,10 @@
-(ns reajure.test
+(ns rewrap.test
   "Test helpers."
   (:require
    #?@(:cljs [[cljs.test :refer [is]]
               [goog.object :as obj]]
        :clj [[clojure.test :refer [is]]]))
-  #?(:cljs (:require-macros [reajure.test])))
+  #?(:cljs (:require-macros [rewrap.test])))
 
 ;; object testing helpers 
 

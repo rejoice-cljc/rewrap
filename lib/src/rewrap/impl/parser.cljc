@@ -1,4 +1,4 @@
-(ns reajure.impl.parser
+(ns rewrap.impl.parser
   "Parse component arguments.")
 
 (defn- matched-clause?

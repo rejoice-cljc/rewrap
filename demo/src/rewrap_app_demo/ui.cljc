@@ -1,9 +1,9 @@
-(ns reajure-app-demo.ui
+(ns rewrap-app-demo.ui
   (:require
-   #?@(:clj [[reajure.core :as rj]
-             [reajure.compile.hiccup :as hiccup]
-             [reajure.compile.component :as comp]]))
-  #?(:cljs (:require-macros [reajure-app-demo.ui])))
+   #?@(:clj [[rewrap.core :as rj]
+             [rewrap.compile.hiccup :as hiccup]
+             [rewrap.compile.component :as comp]]))
+  #?(:cljs (:require-macros [rewrap-app-demo.ui])))
 
 #?(:clj
    (do

@@ -1,9 +1,9 @@
-(ns reajure.core-test
+(ns rewrap.core-test
   (:require
    #?@(:cljs [[cljs.test :refer [deftest testing is]]]
        :clj [[clojure.test :refer [deftest testing is]]])
-   [reajure.test :as t]
-   [reajure.core :refer [->props]]))
+   [rewrap.test :as t]
+   [rewrap.core :refer [->props]]))
 
 (deftest props-test
   (testing "converts cljs map to js object"
