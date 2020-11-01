@@ -1,10 +1,26 @@
-(ns rewrap.compile.component
+(ns rewrap.component
   "Utilities for compiling React component definitions."
   (:refer-clojure :exclude [compile])
   (:require
    #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
-   [rewrap.impl.parser :as parser]))
+   [rewrap.impl.parser :as parser]
+   [rewrap.impl.js-interop :as j]))
+
+;; -- Compiler Utilites 
+
+(defn ^:export ->props
+  "Convert cljs map to js props object
+   In clj, returns [[cljs.core/obj]] s-expression with appropriate key-value pairs as arguments."
+  ([m] (->props m (j/obj)))
+  ([m o]
+   (if (seq m)
+     (recur (rest m)
+            (let [[k v] (first m)]
+              (j/onto-obj o (j/kw->str k) v)))
+     (j/build-obj o))))
+
+;; -- Compiler  
 
 (s/def ::defnc-forms
   (s/cat
@@ -38,14 +54,14 @@
        (fn-or-val params x-params)
        (fn-or-val body x-body)])))
 
-(defn fc-dname* 
+(defn- fc-dname* 
   "Give a display `name` to a fn component expr."
   [fc-expr name]
   `(let [fc# ~fc-expr]
      (set! (.-displayName fc#) ~(str name))
      fc#))
 
-(defn fc-expr*
+(defn- fc-expr*
   "Generate fn component expr with given `name`, `params`, and `body`."
   [name params body]
   (let [n (count params)]
@@ -57,7 +73,8 @@
                             '[props# ref#])]
              `(~bindings (let [~params ~bindings] ~@body)))))))
 
-(defn compile
+
+(defn ^:export compile
   "Compile component def `forms` using custom `parser`.
    Returns map with parsed :name, :docstr, :params, :body options, along their composed component form."
   ([forms] (compile forms {}))
@@ -69,4 +86,3 @@
       :body   body
       :component (-> (fc-expr* name params body)
                      (fc-dname* name))})))
-

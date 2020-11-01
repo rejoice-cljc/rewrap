@@ -1,26 +1,31 @@
 (ns rewrap-app-demo.ui
   (:require
-   #?@(:clj [[rewrap.core :as rj]
-             [rewrap.compile.hiccup :as hiccup]
-             [rewrap.compile.component :as comp]]))
+   #?(:cljs ["react" :as react])
+   #?@(:clj [[rewrap.hiccup :as hiccup]
+             [rewrap.component :as comp]]))
   #?(:cljs (:require-macros [rewrap-app-demo.ui])))
+
+#?(:cljs (def createElement react/createElement))
 
 #?(:clj
    (do
-     (defn hiccup
+     (defn emit-element "Emit react element expr."
+       [type props & children]
+       `(createElement ~type ~props ~@children))
+
+     (defn hiccup "Compile component hiccup fn." 
        [expr]
        (hiccup/compile
         expr
-        {:parsers {keyword? {:tag #(-> % name str)}
-                   any?     {:props rj/->props}}}))
+        {:emitter emit-element
+         :parsers {keyword? {:tag #(-> % name str)}
+                   any?     {:props comp/->props}}}))
 
-     (defmacro h
-       "Compile hiccup component."
+     (defmacro h "Compile component hiccup macro."
        [expr]
        (hiccup expr))
 
-     (defmacro defc
-       "Define fn component."
+     (defmacro defc "Define fn component."
        [& forms]
        (let [{:keys [name docstr component]} (comp/compile
                                               forms

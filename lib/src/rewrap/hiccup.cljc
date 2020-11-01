@@ -1,8 +1,7 @@
-(ns rewrap.compile.hiccup
+(ns rewrap.hiccup
   "Utilities for compiling Hiccup arguments into React components."
   (:refer-clojure :exclude [compile])
   (:require
-   [rewrap.core]
    [rewrap.impl.sexp :as sexp]
    [rewrap.impl.parser :as parser]))
 
@@ -50,14 +49,13 @@
 (defn compile
   "Compile any hiccup in component `body` using custom `opts`.
    Options: 
-      - :emitter      - fn or macro that accepts [tag props children] arguments.
+      - :emitter      - fn or macro that accepts [tag props & children] arguments.
       - :parsers      - {clause parser} map as specified in [[component/parse-args]].
       - :precompiled? - predicate fn, whether component tag and props need compilation.
       - :callable?    - predicate fn, whether component can be self-called after compilation."
   ([body] (compile body {}))
   ([body {:keys [emitter parsers precompiled? callable?]
-          :or {emitter     rewrap.core/render
-               parsers      {}
+          :or {parsers      {}
                precompiled? (fn [_] false)
                callable?    (fn [_] false)}
           :as opts}]

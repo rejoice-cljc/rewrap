@@ -1,9 +1,16 @@
-(ns rewrap.compile.component-test
+(ns rewrap.component-test
   (:require
    #?(:cljs [cljs.test :refer [deftest testing is]]
       :clj  [clojure.test :refer [deftest testing is]])
    [clojure.string :as str]
-   [rewrap.compile.component :as comp]))
+   [rewrap.test :as t]
+   [rewrap.component :as comp]))
+
+(deftest comp-props-test
+  (testing "converts cljs map to js object"
+    (is (t/obj-eq (comp/->props {:foo "bar"})
+                  #?(:cljs #js {"foo" "bar"}
+                     :clj `(cljs.core/js-obj "foo" "bar"))))))
 
 (deftest comp-compile-def-test
   (letfn [(testable [m] (dissoc m :component))]
