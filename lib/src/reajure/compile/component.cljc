@@ -23,16 +23,16 @@
         [name docstr params body]))))
 
 (defn- apply-forms-map-parser
-  "Apply parser map to normalized forms `nforms`.
+  "Apply parser map to normalized `forms`.
    Accepts :name, :docstr, :params, :body parsing keys.
    A parser value can either be a transform fn (fn [x] x) or hardcoded value."
-  [nforms {:keys [name docstr params body]
+  [forms {:keys [name docstr params body]
            :or {name   identity
                 docstr identity
                 params   identity
                 body   identity}}]
   (letfn [(fn-or-val [f-or-v x] (if (fn? f-or-v) (f-or-v x) f-or-v))]
-    (let [[x-name x-docstr x-params x-body] nforms]
+    (let [[x-name x-docstr x-params x-body] forms]
       [(fn-or-val name x-name)
        (fn-or-val docstr x-docstr)
        (fn-or-val params x-params)

@@ -34,7 +34,7 @@
     [tag props children]))
 
 (defn- apply-parser-args-map
-  "Apply parser map to normalized component args `nargs`.
+  "Apply parser map to normalized component `args`.
    Accepts :tag, :props, and :children keys.
    A parser value can either be a transform fn (fn [x] x) or hardcoded value."
   [args {:keys [tag props children]
@@ -74,7 +74,7 @@
                          body
                          {:parsers          parsers
                           :normalize        normalize-args
-                          :apply-parser-map   apply-parser-args-map
+                          :apply-parser-map apply-parser-args-map
                           :terminate-early? #(not (maybe-hiccup? %))})
                [t p ch]  args]
            (cond
