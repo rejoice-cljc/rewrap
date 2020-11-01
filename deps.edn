@@ -1,7 +1,7 @@
 {:paths ["lib/src"]
  :aliases
  {:local
-  {:extra-paths ["lib/local"
+  {:extra-paths ["lib/priv"
                  "demo/src"]
    :extra-deps
    {binaryage/devtools        {:mvn/version "0.9.10"}
