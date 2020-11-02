@@ -8,7 +8,7 @@
 
 (deftest comp-props-test
   (testing "converts cljs map to js object"
-    (is (t/obj-eq (comp/->props {:foo "bar"})
+    (is (t/obj= (comp/->props {:foo "bar"})
                   #?(:cljs #js {"foo" "bar"}
                      :clj `(cljs.core/js-obj "foo" "bar"))))))
 

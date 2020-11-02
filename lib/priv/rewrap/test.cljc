@@ -8,7 +8,7 @@
 
 ;; object testing helpers 
 
-(defn obj-eq
+(defn obj=
   "Checks whether two objects are equal to each other. 
    In clj, compares the s-expressions."
   [x1 x2]
