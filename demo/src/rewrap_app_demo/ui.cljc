@@ -13,22 +13,20 @@
        [type props & children]
        `(createElement ~type ~props ~@children))
 
-     (defn hiccup "Compile component hiccup fn." 
-       [expr]
-       (hiccup/compile
-        expr
-        {:emitter emit-element
-         :parsers {keyword? {:tag #(-> % name str)}
-                   any?     {:props comp/->props}}}))
+     (defn compile-hiccup "Compile any hiccup in component expr."
+       [component]
+       (hiccup/compile component
+                       {:emitter emit-element
+                        :parsers {keyword? {:tag #(-> % name str)}
+                                  any?     {:props comp/->props}}}))
 
      (defmacro h "Compile component hiccup macro."
-       [expr]
-       (hiccup expr))
+       [component]
+       (compile-hiccup component))
 
      (defmacro defc "Define fn component."
-       [& forms]
-       (let [{:keys [name docstr component]} (comp/compile
-                                              forms
-                                              {:body (fn [xs] `[~@(butlast xs) ~(hiccup (last xs))])})]
+       [& decls]
+       (let [{:keys [name docstr params eval-exprs return-expr]} (comp/conform decls)
+             element-expr (compile-hiccup return-expr)]
          `(def ~@(if docstr [name docstr] [name])
-            ~component)))))
+            ~(comp/generate name params eval-exprs element-expr))))))

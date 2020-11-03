@@ -4,10 +4,9 @@
   (:require
    #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
-   [rewrap.impl.parser :as parser]
    [rewrap.impl.js-interop :as j]))
 
-;; -- Compiler Utilites 
+;; -- Compiler utilites 
 
 (defn ^:export ->props
   "Convert cljs map to js props object
@@ -20,69 +19,39 @@
               (j/onto-obj o (j/kw->str k) v)))
      (j/build-obj o))))
 
-;; -- Compiler  
-
-(s/def ::defnc-forms
+(s/def ::def-decls
   (s/cat
-   :name    symbol?
-   :docstr  (s/? string?)
-   :params  (s/coll-of any? :kind vector?)
-   :body    (s/* any?)))
+   :name     symbol?
+   :docstr   (s/? string?)
+   :params   (s/coll-of any? :kind vector?)
+   :body     (s/* any?)))
 
-(defn normalize-forms
-  "Normalize component defn forms."
-  [forms]
-  (let [parsed (s/conform ::defnc-forms forms)]
+(defn conform
+  "Conform component def declaration as per ::def-decls spec."
+  [decls]
+  (let [parsed (s/conform ::def-decls decls)]
     (if (= parsed :clojure.spec.alpha/invalid)
-      (throw (ex-info "Invalid component definition." (s/explain-data ::defnc-forms parsed)))
-      (let [{:keys [name docstr params body]} parsed]
-        [name docstr params body]))))
+      (throw (ex-info "Invalid component definition." (s/explain-data ::def-decls parsed)))
+      (let [return-expr (-> parsed :body last)
+            eval-exprs (-> parsed :body butlast)]
+        (cond-> (dissoc parsed :body)
+          return-expr (assoc :return-expr return-expr)
+          eval-exprs (assoc :extra-exprs eval-exprs))))))
 
-(defn- apply-forms-map-parser
-  "Apply parser map to normalized `forms`.
-   Accepts :name, :docstr, :params, :body parsing keys.
-   A parser value can either be a transform fn (fn [x] x) or hardcoded value."
-  [forms {:keys [name docstr params body]
-           :or {name   identity
-                docstr identity
-                params   identity
-                body   identity}}]
-  (letfn [(fn-or-val [f-or-v x] (if (fn? f-or-v) (f-or-v x) f-or-v))]
-    (let [[x-name x-docstr x-params x-body] forms]
-      [(fn-or-val name x-name)
-       (fn-or-val docstr x-docstr)
-       (fn-or-val params x-params)
-       (fn-or-val body x-body)])))
-
-(defn- fc-dname* 
-  "Give a display `name` to a fn component expr."
-  [fc-expr name]
-  `(let [fc# ~fc-expr]
-     (set! (.-displayName fc#) ~(str name))
-     fc#))
-
-(defn- fc-expr*
-  "Generate fn component expr with given `name`, `params`, and `body`."
-  [name params body]
-  (let [n (count params)]
-    `(fn ~name
-       ~@(if (= n 0)
-           `([] ~@body)
-           (let [bindings (if (= n 1)
-                            '[props#]
-                            '[props# ref#])]
-             `(~bindings (let [~params ~bindings] ~@body)))))))
-
-
-(defn ^:export compile
-  "Compile component def `forms` using custom `parser`.
-   Returns map with parsed :name, :docstr, :params, :body options, along their composed component form."
-  ([forms] (compile forms {}))
-  ([forms parser]
-   (let [[name docstr params body] (parser/apply-parser (normalize-forms forms) parser apply-forms-map-parser)]
-     {:name   name
-      :docstr docstr
-      :params params
-      :body   body
-      :component (-> (fc-expr* name params body)
-                     (fc-dname* name))})))
+(defn generate
+  "Generate component fn expr with given `name`, `params`, and `body`.
+   The fn body eval and return exprs can be passed separately with fn*/4."
+  ([name params eval-exprs return-expr] (generate name params `(~@eval-exprs ~return-expr)))
+  ([name params body]
+   (let [n (count params)]
+     `(let [fc-expr# (fn ~name
+                       ~@(if (= n 0)
+                           `([] ~@body)
+                           (let [bindings (if (= n 1)
+                                            '[props#]
+                                            '[props# ref#])]
+                             `(~bindings (let [~params ~bindings] ~@body)))))]
+        ;; note: component name must be capitalied, right now prepending Reajure prefix to name
+        ;; which will also help distinguish precompiled cljs components in devtools
+        (set! (.-displayName fc-expr#) ~(str "Reajure__" name))
+        fc-expr#))))
