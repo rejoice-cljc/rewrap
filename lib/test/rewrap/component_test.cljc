@@ -12,7 +12,7 @@
     (is (=  (comp/conform ['msg "Docstring." []])
             {:name 'msg :docstr "Docstring." :params []}))
     (is (=  (comp/conform ['msg [] "Foo"])
-            {:name 'msg :params [] :return-expr "Foo"}))))
+            {:name 'msg :params [] :body ["Foo"]}))))
 
 (deftest comp-props-test
   (testing "converts cljs map to js object"
