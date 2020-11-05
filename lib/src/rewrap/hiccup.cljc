@@ -46,6 +46,28 @@
        (if-not (js-literal? x-props) (when x-props (fn-or-val props x-props)) x-props)
        (fn-or-val children x-children)])))
 
+(defn- wrap-component-in-dev
+  "Wrap any component tag that resolves to a fn."
+  [tag f]
+  (if (symbol? tag)
+    (let [comp-sym (gensym "comp")]
+     `(if ^boolean goog/DEBUG
+        (let [~comp-sym ~tag]
+          (if (fn? ~comp-sym)
+            ~(f comp-sym)
+            ~comp-sym))
+        ~tag))
+    tag))
+
+(defn with-hiccup-debug*
+  "Wrap component to throw better error if element is left uncompiled as hiccup data."
+  [comp-sym]
+  `(fn [& args#]
+     (let [el# (apply ~comp-sym args#)]
+       (if (vector? el#)
+         (throw (ex-info "Invalid element, possibly uncompiled hiccup." {:element el#}))
+         el#))))
+
 (defn compile
   "Compile any hiccup in component `body` using custom `opts`.
    Options: 
@@ -67,14 +89,16 @@
          `(~initial-tag ~props ~@(mapv #(compile % opts) children))
          (let [parsers  (parser/create-parsers
                          parsers
-                         {:children (fn [ch] (if (vector? ch) (mapv #(compile % opts) ch) ch))})
+                         {:tag      (fn [t] (wrap-component-in-dev t with-hiccup-debug*))
+                          :children (fn [ch] (if (vector? ch) (mapv #(compile % opts) ch) ch))})
                args     (parser/parse
                          body
                          {:parsers          parsers
                           :normalize        normalize-args
                           :apply-parser-map apply-parser-args-map
                           :terminate-early? #(not (maybe-hiccup? %))})
-               [t p ch]  args]
+               [t p ch]  args
+               ]
            (cond
               ;; => Callable tag
              (or (callable? initial-tag)
