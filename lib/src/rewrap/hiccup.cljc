@@ -51,7 +51,7 @@
   [tag f]
   (if (symbol? tag)
     (let [comp-sym (gensym "comp")]
-     `(if ^boolean goog/DEBUG
+     `(if ^boolean goog.DEBUG
         (let [~comp-sym ~tag]
           (if (fn? ~comp-sym)
             ~(f comp-sym)

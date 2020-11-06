@@ -10,7 +10,7 @@
 ;; todo enqueue updates, cleanup inject logic
 
 #?(:cljs
-   (do
+   (when ^boolean goog.DEBUG
      (defn setup!
        "Inject react-refresh runtime into window."
        []
@@ -49,12 +49,12 @@
            ;; settting placeholder values for now, they can be filled in if more fine-grained approach is needed
            force-reset?     false
            get-custom-hooks nil]
-       {:def-refresh    `(if ^boolean goog/DEBUG
+       {:def-refresh    `(when ^boolean goog.DEBUG
                            (def ~sig-sym (signature!)))
-        :hookup-refresh `(if ^boolean goog/DEBUG
+        :hookup-refresh `(when ^boolean goog.DEBUG
                                    ;; the second call to sig is for collecting component hook calls
                            (~sig-sym))
-        :init-refresh   `(if ^boolean goog/DEBUG
+        :init-refresh   `(when ^boolean goog.DEBUG
                            (do
                             ;; creating initial component signature 
                              (~sig-sym ~comp-sym ~hooks-id ~force-reset? ~get-custom-hooks)
