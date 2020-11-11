@@ -44,19 +44,18 @@
                   ["p" #js {:children "foo"}])]
           :clj [(is (= el `(create-element "div" nil (create-element "p" nil "foo"))))]))))
 
-
 (deftest hiccup-compile-parser-test
   (testing "can parse an argument's hardcode value"
-    (t/is-el=  (hiccup [:div "foo"] {:parsers {keyword? {:tag "div"}}})
+    (t/is-el=  (hiccup [:div "foo"] {:parsers [[keyword? {:tag "div"}]]})
                 #?(:cljs ["div" #js {:children "foo"}]
                    :clj `(create-element "div" nil "foo"))))
 
   (testing "can parse an argument's transform fn"
-    (t/is-el=  (hiccup [:div "foo"] {:parsers {keyword? {:tag name}}})
+    (t/is-el=  (hiccup [:div "foo"] {:parsers [[keyword? {:tag name}]]})
                 #?(:cljs ["div" #js {:children "foo"}]
                    :clj `(create-element "div" nil "foo"))))
 
   (testing "terminates early if parser fn returns list"
-    (is (= (hiccup [:div "foo"] {:parsers {:div     (fn [_ _ ch] `(custom-el "div" ~ch))
-                                                   keyword? {:tag :error}}})
+    (is (= (hiccup [:div "foo"] {:parsers [[:div     (fn [_ _ ch] `(custom-el "div" ~ch))]
+                                           [keyword? {:tag :error}]]})
            `(custom-el "div" "foo")))))

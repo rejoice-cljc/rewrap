@@ -17,8 +17,8 @@
        [component]
        (hiccup/compile component
                        {:emitter emit-element
-                        :parsers {keyword? {:tag #(-> % name str)}
-                                  any?     {:props comp/->props}}}))
+                        :parsers [[keyword? {:tag #(-> % name str)}]
+                                  [any?     {:props comp/->props}]]}))
 
      (defmacro h "Compile component hiccup macro."
        [component]
@@ -26,7 +26,9 @@
 
      (defmacro defc "Define fn component."
        [& decls]
-       (let [{:keys [name docstr params eval-exprs return-expr]} (comp/conform decls)
-             element-expr (compile-hiccup return-expr)]
+       (let [{:keys [name docstr params body]} (comp/conform decls)
+             eval-exprs       (butlast body)
+             component-expr  (last body)
+             element-expr (compile-hiccup component-expr)]
          `(def ~@(if docstr [name docstr] [name])
-            ~(comp/generate name params eval-exprs element-expr))))))
+            ~(comp/generate [name docstr params eval-exprs element-expr]))))))

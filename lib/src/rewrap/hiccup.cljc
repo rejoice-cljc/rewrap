@@ -87,10 +87,10 @@
      (let [[initial-tag props children] (normalize-args body)]
        (if (precompiled? initial-tag)
          `(~initial-tag ~props ~@(mapv #(compile % opts) children))
-         (let [parsers  (parser/create-parsers
+         (let [parsers  (conj
                          parsers
-                         {:tag      (fn [t] (wrap-component-in-dev t with-hiccup-debug*))
-                          :children (fn [ch] (if (vector? ch) (mapv #(compile % opts) ch) ch))})
+                         [any? {:tag      (fn [t] (wrap-component-in-dev t with-hiccup-debug*))
+                                :children (fn [ch] (if (vector? ch) (mapv #(compile % opts) ch) ch))}])
                args     (parser/parse
                          body
                          {:parsers          parsers

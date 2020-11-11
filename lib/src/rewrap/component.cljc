@@ -60,7 +60,7 @@
                              `(~bindings
                                (let [~params ~(update bindings 0 wrap-props-param)]
                                  ~@body)))))]
-        ;; note: component name must be capitalied, right now prepending Reajure prefix to name
+        ;; note: component name must be capitalied, right now prepending Rewrap prefix to name
         ;; which will also help distinguish precompiled cljs components in devtools
-        (set! (.-displayName fc-expr#) ~(str "Reajure__" (parse-display-name name)))
+        (set! (.-displayName fc-expr#) ~(str "Rewrap__" (parse-display-name name)))
         fc-expr#))))

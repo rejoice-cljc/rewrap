@@ -9,7 +9,7 @@
   [:p "Foo"])
 
 (ui/defc comp-with-props
-  [props]
+  [^js props]
   [:p (.-text props)])
 
 (deftest ui-h-compile-test
