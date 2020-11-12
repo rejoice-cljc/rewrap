@@ -77,7 +77,7 @@
       - :callable?    - predicate fn, whether component can be self-called after compilation."
   ([body] (compile body {}))
   ([body {:keys [emitter parsers precompiled? callable?]
-          :or {parsers      {}
+          :or {parsers      []
                precompiled? (fn [_] false)
                callable?    (fn [_] false)}
           :as opts}]

@@ -1,4 +1,4 @@
-(ns rewrap.component-test
+(ns rewrap.tests.component-test
   (:require
    #?(:cljs [cljs.test :refer [deftest testing is]]
       :clj  [clojure.test :refer [deftest testing is]])

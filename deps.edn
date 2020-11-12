@@ -1,14 +1,13 @@
-{:paths ["lib/src"]
+{:paths ["src"]
  :aliases
  {:local
-  {:extra-paths ["lib/priv"
-                 "demo/src"]
+  {:extra-paths ["example/src"]
    :extra-deps
    {binaryage/devtools        {:mvn/version "0.9.10"}
     thheller/shadow-cljs      {:mvn/version "2.11.0"}}}
 
   :test
-  {:extra-paths ["lib/test"
-                 "demo/test"]
+  {:extra-paths ["test"
+                 "example/test"]
    :extra-deps
    {lambdaisland/kaocha     {:mvn/version "0.0-554"}}}}}

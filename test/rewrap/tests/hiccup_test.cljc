@@ -1,4 +1,4 @@
-(ns rewrap.hiccup-test
+(ns rewrap.tests.hiccup-test
   (:require
    #?(:cljs [cljs.test :refer [deftest testing is]]
       :clj  [clojure.test :refer [deftest testing is]])
@@ -45,12 +45,12 @@
           :clj [(is (= el `(create-element "div" nil (create-element "p" nil "foo"))))]))))
 
 (deftest hiccup-compile-parser-test
-  (testing "can parse an argument's hardcode value"
+  (testing "can parse hardcode value"
     (t/is-el=  (hiccup [:div "foo"] {:parsers [[keyword? {:tag "div"}]]})
                 #?(:cljs ["div" #js {:children "foo"}]
                    :clj `(create-element "div" nil "foo"))))
 
-  (testing "can parse an argument's transform fn"
+  (testing "can parse transform fn"
     (t/is-el=  (hiccup [:div "foo"] {:parsers [[keyword? {:tag name}]]})
                 #?(:cljs ["div" #js {:children "foo"}]
                    :clj `(create-element "div" nil "foo"))))
